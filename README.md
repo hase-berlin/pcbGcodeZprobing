@@ -18,6 +18,11 @@ the Eagle CAD program by Cadsoft.
 The output of the filter is valid for LinuxCNC, for other CNC controllers some tweaking might be necessary.
 In particular, for probing the height profile, the G38.2 move is used; other controllers may need another code.
 
+Please note: you must separate engraving/etching moves and drill moves to separate files: this script is for the engraving part, the drills are done separately (via another G-Code-file generated in another run of the G-Code exporter).
+Eagle by default includes drills and engraves in one file; which is good for machines with automatic tool changers...
+If you do this frequently, set up a CAM-job to automatically create both G-Code exports.
+Use a different file extension (like .drill) if you use the script as an input filter in LinuxCNC, this avoids invoking the filter for the drilling moves.
+
 The size of the PCB in the X-Y-plane is autodetected by the script.
 The copper surface of the PCB is coordinate Z=0, the engrave moves go below that (Z negative, adjustable i nthe source).
 This is the usual coordinate system for all PCB-GCode generators, the author thinks.
