@@ -126,6 +126,7 @@ def main():
     XMax = -10000
     YMin = 10000
     YMax = -10000
+    Gval = 0;
 
     infile = sys.argv[1]
     f = open(infile, "r")
@@ -386,9 +387,9 @@ M3
             Gval = int(match.group(1))
 
         # extract the X coordinate from the line
-        match = re.match(".*X(-*\d*\.*\d*)",line)
-        if match:
-            X_dest = float(match.group(1))
+        xmatch = re.match(".*X(-*\d*\.*\d*)",line)
+        if xmatch:
+            X_dest = float(xmatch.group(1))
 
         # and also the Y coordinate
         match = re.match(".*Y(-*\d*\.*\d*)",line)
@@ -398,7 +399,11 @@ M3
         # if the move as a milling move (G01), replace it with a subroutine call
         if Gval == 1:
             print('O200 call [%.4f] [%.4f] [%.4f] [%.4f]\n' % (X_start, Y_start, X_dest, Y_dest),end="")
-        # anything that is not a G1/G01 is simply copied to output
+        #if this is a rapid to a new position (G00 X* Y*), then need to move to new position, then output a subroutine call to get to proper Z depth for that position, before making G01 move to next destination
+        elif Gval == 0 and xmatch:
+            print(line)
+            print('O200 call [%.4f] [%.4f] [%.4f] [%.4f]\n' % (X_dest, Y_dest, X_dest, Y_dest),end="")
+        # anything that is not a G1/G01, or not a G00 X* is simply copied to output
         else:
             print(line)
     print("M5 (spindle off)")
